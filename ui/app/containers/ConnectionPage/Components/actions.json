@@ -1,0 +1,37 @@
+{
+  "actions": [
+    {
+      "description": "Welcome Intent",
+      "name": "MAIN",
+      "fulfillment": {
+        "conversationName": "articulate_intent"
+      },
+      "intent": {
+        "name": "actions.intent.MAIN",
+        "trigger": {
+          "queryPatterns": ["talk to <YOUR GOOGLE ACTION DISPLAY NAME>"]
+        }
+      }
+    },
+    {
+      "description": "Articulate Intent",
+      "name": "TEXT",
+      "fulfillment": {
+        "conversationName": "articulate_intent"
+      },
+      "intent": {
+        "name": "actions.intent.TEXT",
+        "trigger": {
+          "queryPatterns": []
+        }
+      }
+    }
+  ],
+  "conversations": {
+    "articulate_intent": {
+      "name": "articulate_intent",
+      "url": "<YOUR FULLFILMENT URL>",
+      "fulfillmentApiVersion": 2
+    }
+  }
+}

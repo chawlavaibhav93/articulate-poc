@@ -1,0 +1,38 @@
+version: '3.0'
+
+services:
+  nginx:
+    image: nginx:1.15.10-alpine
+    volumes:
+      - ./local-storage/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./local-storage/nginx/nginx-http.conf:/etc/nginx/nginx.conf
+    command: [nginx-debug, '-g', 'daemon off;']
+    ports: ['${PORT:-9000}:80']
+  api:
+    image: khoros/bot-api:1.0
+  ui:
+    image: khoros/bot-ui:1.0
+  rasa:
+    image: samtecspg/articulate-rasa:0.29.0
+    volumes: ["${MODEL_DIR:-./local-storage/rasa/nlu-model}:/app/projects", "${RASA_CONFIG:-./local-storage/rasa/rasa-config.yml}:/app/config.yml", "./local-storage/rasa/logs:/app/logs"]
+  duckling:
+    image: samtecspg/duckling:0.1.6.0
+  redis:
+    image: redis:4.0.6-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - ${REDIS_DATA:-./local-storage/redis-data}:/data
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_TAG:-6.5.1}
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ${ES_CONFIG:-./local-storage/elasticsearch/config/elasticsearch.yml}:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ${ES_DATA:-./local-storage/elasticsearch/data}:/usr/share/elasticsearch/data
+      - ${ES_DATA:-./local-storage/elasticsearch/docker-healthcheck.sh}:/usr/share/docker-healthcheck.sh
